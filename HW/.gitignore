@@ -2,3 +2,4 @@ venv/
 *.pdf
 HW2/GoogleNews-vectors-negative300.bin
 HW2/Bilder
+HW3/p1/wiki-news-300d-1M.vec
