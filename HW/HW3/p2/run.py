@@ -74,9 +74,11 @@ model = Sequential()
 model.add(Embedding(vocab_size, embedding_dims, input_length=pad_length))
 
 ####################################
-#                                  #
-#   add your implementation here   #
-#                                  #
+
+model.add(Conv1D (filters=filters,kernel_size=2,activation='relu'))
+model.add(GlobalMaxPooling1D())
+model.add(Dense(20, activation='softmax'))
+print(model.summary())
 ####################################
 
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
@@ -91,7 +93,30 @@ print('Accuracy of simple CNN: %f\n' % model.evaluate(dev_x, dev_y, verbose=0)[1
 # ------------------------------------------------
 
 ####################################
-#                                  #
-#   add your implementation here   #
-#                                  #
+
+epochs = 50
+
+checkpoint_filepath = '/tmp/checkpoint'
+model_checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
+    filepath=checkpoint_filepath,
+    save_weights_only=True,
+    monitor='val_accuracy',
+    mode='max',
+    save_best_only=True)
+
+model.fit(train_x, train_y, batch_size=batch_size, epochs=epochs, verbose=train_verbose, callbacks=[model_checkpoint_callback])
+print('Accuracy of simple CNN: %f\n' % model.evaluate(dev_x, dev_y, verbose=0)[1])
+model.load_weights(checkpoint_filepath)
+
+
+
+
+callback = tf.keras.callbacks.EarlyStopping(monitor='loss', patience=3)
+
+history = model.fit(np.arange(100).reshape(5, 20), np.zeros(5), epochs=10, batch_size=1, callbacks=[callback],verbose=0)
+model.fit(train_x, train_y, batch_size=batch_size, epochs=epochs, verbose=train_verbose, callbacks=[model_checkpoint_callback])
+print('Accuracy of simple CNN: %f\n' % model.evaluate(dev_x, dev_y, verbose=0)[1])
+model.load_weights(checkpoint_filepath)
+print(len(history.history['loss']))
+
 ####################################

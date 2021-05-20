@@ -112,5 +112,13 @@ print(embed_sentence(token_to_vector(example_sentence))[:20])
 # ------------------------------------------------
 
 ####################################
-# Implement Code here
+from keras.models import Sequential, Model
+from keras.layers import *
+import tensorflow as tf
+from tensorflow import keras
+
+
+
+
+
 ####################################
