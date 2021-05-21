@@ -22,7 +22,8 @@ def read_data(filename, labeled = True ):
 print("----------------------------------------------")
 print("Excercise 1.1")
 print("First sentence pair of Training set:  ")
-data = read_data("data-test.txt")
+data = read_data("data-test.txt")       #Needs to best train set
+
 print(data[0][0], data[1][0],data[2][0])
 
 
@@ -79,7 +80,7 @@ def tokenize(text):
     tokens = word_tokenize(text)
     return tokens
 
-example_sentence = tokenize(read_data("data-train.txt")[1][0])
+example_sentence = tokenize(read_data("data-train.txt")[1][0])  # Read data überfluessig, da als data defined above
 
 print("Tokenized first sentence of training data set:")
 print(example_sentence)
@@ -92,7 +93,7 @@ def token_to_vector(token_list):
         try:
             vector = wik_dic[token]
         except:
-            print("No words found for {}. Assign zero-vector.".format(token))
+            #print("No words found for {}. Assign zero-vector.".format(token))  #auskommentiert damit man outputs lesen kann
             vector = np.zeros(300)
         vector_list.append(vector)
     return vector_list
@@ -116,9 +117,63 @@ from keras.models import Sequential, Model
 from keras.layers import *
 import tensorflow as tf
 from tensorflow import keras
+np.random.seed(7)
+
+# 2b) creating the model
+
+# 2 Inputs, one for each sentence embedding
+input1 = Input(shape=(300,))
+input2 = Input(shape=(300,))
+
+# A layer that concatenates both inputs
+inputs = concatenate(axis=1, inputs=[input1, input2])
+
+# A dropout layer with probability 0.3
+layer1 = Dropout(0.3)
+x = layer1(inputs)
+
+# A Dense layer with 300 dimensions and relu activation
+x = Dense(300, activation='relu')(x)
+
+# A dropout layer with probability 0.3
+x = Dropout(0.3)(x)
+
+# A Dense layer with 1 dimension and sigmoid activation
+outputs = Dense(1, activation='sigmoid')(x)
+
+model = Model(inputs=[input1, input2], outputs=outputs)
+
+print(model.summary())
+
+# 2c) Compile the Model with Adam and MSE
+
+model.compile(optimizer="Adam", loss="mse", metrics=["mse"])
+
+# 2d) Train the model, Batch size = 100, epochs= 300
+
+# formatting
+
+y = np.asarray(data[0])    # Evaluations
+
+temp1 = []
+for i in data[1]:
+    temp1.append(np.array(embed_sentence(token_to_vector(i))))
 
 
+temp2 = []
+for i in data[2]:
+    temp2.append(np.array(embed_sentence(token_to_vector(i))))
 
+x = [temp1,temp2]
+print(len(x))
+
+
+# 2d)
+
+model.fit(x=x, y=y, batch_size=100, epochs=300)
+print("Fit model on training data")
+
+# Problem: Das system erwartet ein Np.arary von np.arrays von einer liste oder np.array für die daten;
 
 
 ####################################
