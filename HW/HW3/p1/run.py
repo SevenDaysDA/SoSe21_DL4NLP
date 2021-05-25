@@ -22,7 +22,7 @@ def read_data(filename, labeled = True ):
 print("----------------------------------------------")
 print("Excercise 1.1")
 print("First sentence pair of Training set:  ")
-data = read_data("data-test.txt")       #Needs to best train set
+data = read_data("data-train.txt")
 
 print(data[0][0], data[1][0],data[2][0])
 
@@ -153,27 +153,51 @@ model.compile(optimizer="Adam", loss="mse", metrics=["mse"])
 
 # formatting
 
-y = np.asarray(data[0])    # Evaluations
+y_train = np.asarray(data[0])    # Evaluations
 
 temp1 = []
 for i in data[1]:
-    temp1.append(np.array(embed_sentence(token_to_vector(i))))
+    temp1.append(embed_sentence(token_to_vector(i)))
 
 
 temp2 = []
 for i in data[2]:
-    temp2.append(np.array(embed_sentence(token_to_vector(i))))
+    temp2.append(embed_sentence(token_to_vector(i)))
 
-x = [temp1,temp2]
-print(len(x))
-
+x_train = [np.asarray(temp1), np.asarray(temp2)]
 
 # 2d)
 
-model.fit(x=x, y=y, batch_size=100, epochs=300)
+history = model.fit(x=x_train, y=y_train, batch_size=100, epochs=300)
 print("Fit model on training data")
 
-# Problem: Das system erwartet ein Np.arary von np.arrays von einer liste oder np.array für die daten;
+# MSE = 0.0626 after 300 epochs on train set
+
+history.history
+
+# Evaluate model on development data set
+
+data_dev = read_data("data-dev.txt")
+
+y_dev = np.asarray(data_dev[0])    # Evaluations
+
+temp1 = []
+for i in data_dev[1]:
+    temp1.append(embed_sentence(token_to_vector(i)))
+
+
+temp2 = []
+for i in data_dev[2]:
+    temp2.append(embed_sentence(token_to_vector(i)))
+
+x_dev = [np.asarray(temp1), np.asarray(temp2)]
+
+print("Finished reading Dev. Data")
+
+
+results = model.evaluate(x_dev, y_dev, batch_size=100)
+
+print("Final mean squared error on development data set:", results[0])
 
 
 ####################################
