@@ -33,7 +33,7 @@ def write_simscore(filename, sim_list):
             f.write(str(element))
             f.write("\n")
         f.close()
-    print("Done writing")
+
 
 write_simscore("simscores.txt",data[0])
 print("----------------------------------------------")
@@ -76,9 +76,13 @@ import nltk
 from nltk import word_tokenize
 nltk.download('punkt')
 
+
 def tokenize(text):
     tokens = word_tokenize(text)
     return tokens
+print("----------------------------------------------")
+print()
+print("Excercise 1.2")
 
 example_sentence = tokenize(read_data("data-train.txt")[1][0])  # Read data überfluessig, da als data defined above
 
@@ -107,12 +111,16 @@ def  embed_sentence(vector_list):
 
 print("First 20 dimensions of averaged vector:")
 print(embed_sentence(token_to_vector(example_sentence))[:20])
+print("----------------------------------------------")
 ####################################
 # ------------------------------------------------
 #             1.3 Scoring the Similarity
 # ------------------------------------------------
 
 ####################################
+print("----------------------------------------------")
+print()
+print("Excercise 1.3")
 from keras.models import Sequential, Model
 from keras.layers import *
 import tensorflow as tf

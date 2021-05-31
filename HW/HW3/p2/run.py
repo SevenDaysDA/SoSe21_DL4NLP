@@ -87,36 +87,29 @@ print('Accuracy of simple CNN: %f\n' % model.evaluate(dev_x, dev_y, verbose=0)[1
 
 
 
-
 # ------------------------------------------------
 #                2.3 Early Stopping
 # ------------------------------------------------
 
 ####################################
-
 epochs = 50
 
 checkpoint_filepath = '/tmp/checkpoint'
 model_checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
     filepath=checkpoint_filepath,
     save_weights_only=True,
-    monitor='val_accuracy',
+    monitor='loss',
     mode='max',
-    save_best_only=True)
-
-model.fit(train_x, train_y, batch_size=batch_size, epochs=epochs, verbose=train_verbose, callbacks=[model_checkpoint_callback])
-print('Accuracy of simple CNN: %f\n' % model.evaluate(dev_x, dev_y, verbose=0)[1])
-model.load_weights(checkpoint_filepath)
+    save_best_only=True,
+    )
 
 
+callback_earlystoppping = tf.keras.callbacks.EarlyStopping(monitor='loss', patience=2)
 
 
-callback = tf.keras.callbacks.EarlyStopping(monitor='loss', patience=3)
 
-history = model.fit(np.arange(100).reshape(5, 20), np.zeros(5), epochs=10, batch_size=1, callbacks=[callback],verbose=0)
-model.fit(train_x, train_y, batch_size=batch_size, epochs=epochs, verbose=train_verbose, callbacks=[model_checkpoint_callback])
-print('Accuracy of simple CNN: %f\n' % model.evaluate(dev_x, dev_y, verbose=0)[1])
-model.load_weights(checkpoint_filepath)
-print(len(history.history['loss']))
+model.fit(train_x, train_y, batch_size=batch_size, epochs=epochs, verbose=train_verbose, callbacks=[model_checkpoint_callback, callback_earlystoppping])
+print('Accuracy of Dev Test: %f\n' % model.evaluate(dev_x, dev_y, verbose=0)[1])
+print('Accuracy of Test set: %f\n' % model.evaluate(dev_x, dev_y, verbose=0)[1])
 
 ####################################
