@@ -9,6 +9,7 @@ from keras import metrics
 from keras.models import Sequential
 from keras.layers.embeddings import Embedding
 from keras.callbacks import Callback, ModelCheckpoint
+from keras.layers import *
 
 from sklearn.metrics import f1_score
 
@@ -83,20 +84,27 @@ def run(params):
                             mask_zero=True,
                             trainable=False,
                             batch_input_shape=(batch_size, max_sentence_length)))
+        model.add(Dropout(params["dropout"]))
         if params["model"] == "lstm":
             ####################################
-            #                                  #
-            #   add your implementation here   #
-            #                                  #
+
+            model.add(LSTM(params["hidden_units"], input_shape=(max_sentence_length, 1), return_sequences=True))
+
             ####################################
         elif params["model"] == "bilstm":
+            ####################################)
+
+            model.add(Bidirectional(LSTM(params["hidden_units"], input_shape=(max_sentence_length, 1), return_sequences=True)))
+
             ####################################
-            #                                  #
-            #   add your implementation here   #
-            #                                  #
-            ####################################
+
         else:
             raise Exception('Unknown model!')
+
+
+        model.add(Dropout(params["dropout"]))
+        model.add(TimeDistributed(Dense(number_of_classes+1)))
+        model.add(Activation('softmax'))
 
         model.compile('adagrad', 'categorical_crossentropy', metrics=[metrics.categorical_accuracy])
         return model
@@ -188,7 +196,7 @@ if __name__=='__main__':
 
     params = {"model_path": model_path,
               "predict_file": predict_file,
-              "model": "lstm", # "lstm" or "bilstm"
+              "model": "bilstm", # "lstm" or "bilstm"
               "checkpointer": "acc",        # "acc" or "f1"
               "batch_size": 10,
               "dropout": 0.5,
