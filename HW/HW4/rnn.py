@@ -84,27 +84,19 @@ def run(params):
                             mask_zero=True,
                             trainable=False,
                             batch_input_shape=(batch_size, max_sentence_length)))
+
         model.add(Dropout(params["dropout"]))
+
         if params["model"] == "lstm":
-            ####################################
-
             model.add(LSTM(params["hidden_units"], input_shape=(max_sentence_length, 1), return_sequences=True))
-
-            ####################################
         elif params["model"] == "bilstm":
-            ####################################)
-
             model.add(Bidirectional(LSTM(params["hidden_units"], input_shape=(max_sentence_length, 1), return_sequences=True)))
-
-            ####################################
-
         else:
             raise Exception('Unknown model!')
 
-
         model.add(Dropout(params["dropout"]))
-        model.add(TimeDistributed(Dense(number_of_classes+1)))
-        model.add(Activation('softmax'))
+        model.add(Dense(number_of_classes+1))
+        model.add(Activation('sigmoid'))
 
         model.compile('adagrad', 'categorical_crossentropy', metrics=[metrics.categorical_accuracy])
         return model
@@ -134,8 +126,33 @@ def run(params):
             # 4. Store best model              #
             #                                  #
             ####################################
+            #self.model.load_weights(model_path)
 
-            print(" F1 score %f" % (self.current_f1))
+            # Get class probabilities for the test set:
+            predictions = self.model.predict(X_test, batch_size=batch_size)
+            # Compute F1 score for test set:
+            test_pred = []
+            test_truth = []
+            for sent_pred, sent_truth in zip(predictions, y_test_index):
+                for lab, word_pred in zip(sent_truth, sent_pred):
+                    test_truth.append(index_to_label[lab])
+                    try:
+                      test_pred.append(index_to_label[word_pred.tolist().index(max(word_pred))])
+                      if word_pred.tolist().index(max(word_pred)) == 0:
+                          print("Warning, PADDING label got predicted!")
+                    except:
+                      test_pred.append(0)
+            self.current_f1 = f1_score(test_truth, test_pred, list(index_to_label.values()), average='macro')
+
+
+            # 4. Store best model:
+            if np.less(self.best_f1, self.current_f1):
+                self.best_f1 = self.current_f1
+                self.model.save(model_path)
+                print("model saved")
+                print("F1 score on test set: {}".format(self.current_f1))
+            else:
+                print("No update")
             return
 
 
@@ -196,11 +213,11 @@ if __name__=='__main__':
 
     params = {"model_path": model_path,
               "predict_file": predict_file,
-              "model": "bilstm", # "lstm" or "bilstm"
-              "checkpointer": "acc",        # "acc" or "f1"
-              "batch_size": 10,
-              "dropout": 0.5,
-              "hidden_units": 100,
+              "model": "bilstm",    # "lstm" or "bilstm"
+              "checkpointer": "f1", # "acc" or "f1"
+              "batch_size": 8,
+              "dropout": 0.2,
+              "hidden_units": 400,
               "epochs": 10,
               "embeddings": "glove.6B.50d.txt"}
     run(params)

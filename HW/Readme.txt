@@ -10,3 +10,12 @@ Branch-Variante 2: Statt Weight update mit Formel über Loss Funktion, Siehe Vorl
 (05.05.2021) 
 Script ist fertig und läuft in Docker
 Um es auszuführen wird das word2vec embedding module benötigt aus moodle. Am besten runterladen und im selben ordner abspeichern.
+
+
+
+----------------------- ----------------------- -----------------------
+	Homework 4:
+----------------------- ----------------------- -----------------------
+
+(16.06.2021)
+Embedding muss runtergeladen werden, bevor Scripte gestartet werden
