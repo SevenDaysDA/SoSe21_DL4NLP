@@ -18,7 +18,8 @@ def load_dataset(filename, data_path="data", seq2seq=False):
                 if seq2seq:
                     pass
                     ##########################################
-
+                    inflec.append(" ")
+                    lemma.append(" ")
                     ##########################################
 
                 # store assembled inputs
@@ -34,10 +35,10 @@ def load_dataset(filename, data_path="data", seq2seq=False):
             if seq2seq:
                 pass
                 ##########################################
-                lemma_char.replace("_MYJOIN_", "").replace("EMPTY", "")
+
+                lemma_char = lemma_char.replace('_MYJOIN_', '').replace('EMPTY', "")
                 lemma.append(lemma_char)
                 ##########################################
             else:
                 lemma.append(lemma_char)
-
     return inflected_words, lemmata
