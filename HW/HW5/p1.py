@@ -32,9 +32,9 @@ def run(params):
 
 
 if __name__=='__main__':
-    params = {"model": "bilstm",    # bilstm or seq2seq
+    params = {"model": "seq2seq",    # bilstm or seq2seq
               "batch_size": 40,
               "dropout": 0.5,
               "hidden_units": 60,
-              "epochs": 10}
+              "epochs": 5}
     run(params)

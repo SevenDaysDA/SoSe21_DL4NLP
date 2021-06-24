@@ -18,9 +18,7 @@ def load_dataset(filename, data_path="data", seq2seq=False):
                 if seq2seq:
                     pass
                     ##########################################
-                    #                                        #
-                    #   maybe add your implementation here   #
-                    #                                        #
+
                     ##########################################
 
                 # store assembled inputs
@@ -36,9 +34,8 @@ def load_dataset(filename, data_path="data", seq2seq=False):
             if seq2seq:
                 pass
                 ##########################################
-                #                                        #
-                #   maybe add your implementation here   #
-                #                                        #
+                lemma_char.replace("_MYJOIN_", "").replace("EMPTY", "")
+                lemma.append(lemma_char)
                 ##########################################
             else:
                 lemma.append(lemma_char)
